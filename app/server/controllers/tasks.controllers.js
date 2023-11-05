@@ -1,14 +1,41 @@
-export const getTasks = (req, res) => {
-    res.send("obteniendo tareas")
-}
+import {pool} from '../../db/db.js';
 
-export const getTask = (req, res) => {
-    res.send("obteniendo una tarea")
-}
+export const getTasks = async(req, res) => {
+    const [result] = await pool.query(
+        "SELECT * FROM tasks ORDER BY createAt ASC"
+    );
+    res.json(result)
+    console.log(result);
+};
 
-export const createTask = (req, res) => {
-    res.send("creando tareas")
-}
+export const getTask = async (req, res) => {
+    try {
+      const [result] = await pool.query("SELECT * FROM tasks WHERE id = ?", [
+        req.params.id,
+      ]);
+  
+      if (result.length === 0)
+        return res.status(404).json({ message: "Task not found" });
+  
+      res.json(result[0]);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+
+
+export const createTask = async(req, res) => {
+    const { title, description } = req.body;
+    const [result] = await pool.query(
+        "INSERT INTO tasks(title, description) VALUES (?, ?)", 
+        [title, description]
+    );
+    res.json({
+        id: result.insertId,
+        title,
+        description,
+    });
+};
 
 export const updateTask = (req, res) => {
     res.send("actualizando tarea")
