@@ -13,7 +13,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "5432:5432"
     environment:
       - PORT=3000
       - DATABASE_URL=mysql://root:secret@db:3306/myappdb
